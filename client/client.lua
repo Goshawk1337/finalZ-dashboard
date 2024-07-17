@@ -1,10 +1,35 @@
 local ftype = "normal"
+
+local SETTINGS = {
+    ["MINIMAP"] = true
+}
+
+
 RegisterNUICallback('exit', function(data, cb)
-    SetNuiState(false)
+    setNuiState(false)
     cb('ok')
 end)
-RegisterNUICallback('fpsChange', function(data, cb)
-    if data.type == "reset" then
+
+RegisterNUICallback('getData', function(nuiData, cb)
+    local action = nuiData.action
+    local data  = nuiData.data
+
+    if action == "fpsChange" then
+        fpsChange(data)
+    elseif action == "settings" then
+        SETTINGS[data.inputValue] = not data.state
+    elseif action == "copyID" then
+        copyID(data.identifier)
+    end
+
+    
+    cb('ok')
+end)
+
+
+function fpsChange(fpsType) 
+    ftype = fpsType == "reset" and "normal" or fpsType
+    if fpsType == "reset" then
         RopeDrawShadowEnabled(true)
 
         CascadeShadowsSetAircraftMode(true)
@@ -18,8 +43,7 @@ RegisterNUICallback('fpsChange', function(data, cb)
         SetLightsCutoffDistanceTweak(10.0)
         DistantCopCarSirens(true)
         SetArtificialLightsState(false)
-        ftype = "normal"
-    elseif data.type == "ulow" then
+    elseif fpsType == "ulow" then
         RopeDrawShadowEnabled(false)
 
         CascadeShadowsClearShadowSampleType()
@@ -33,8 +57,7 @@ RegisterNUICallback('fpsChange', function(data, cb)
         SetFlashLightFadeDistance(0.0)
         SetLightsCutoffDistanceTweak(0.0)
         DistantCopCarSirens(false)
-        ftype = "ulow"
-    elseif data.type == "low" then
+    elseif fpsType == "low" then
         RopeDrawShadowEnabled(false)
 
         CascadeShadowsClearShadowSampleType()
@@ -48,30 +71,15 @@ RegisterNUICallback('fpsChange', function(data, cb)
         SetFlashLightFadeDistance(5.0)
         SetLightsCutoffDistanceTweak(5.0)
         DistantCopCarSirens(false)
-        ftype = "low"
     end
-end)
-RegisterNUICallback('settings', function(data, cb)
-    if data.type == "MINIMAP" then
-        while true do
-            Wait(0)
-            if data.state then
-                DisplayRadar(false)
-            else
-                DisplayRadar(true)
-            end
-        end
-    end
+end
 
-    cb('ok')
-end)
-RegisterNUICallback('copyID', function(data, cb)
-    lib.setClipboard(data.identifier)
+function copyID(identifier)
+    lib.setClipboard(identifier)
     Config.Notify(Config.locales[Config.Language].copiedSuccess, "success")
+end
 
-    cb('ok')
-end)
-function SetNuiState(state)
+function setNuiState(state)
     SetNuiFocus(state, state)
 
     SendNUIMessage({
@@ -83,7 +91,7 @@ end
 RegisterCommand(Config.Command.commandName, function()
     if not IsEntityDead(cache.ped) or not IsPauseMenuActive() then
         lib.callback("server:setData", false, function(data)
-            SetNuiState(true)
+            setNuiState(true)
             Wait(100)
             SendNUIMessage({
                 type = "loadData",
@@ -97,10 +105,18 @@ end, false)
 RegisterKeyMapping("dashboard", Config.Command.keyMappingDesc, 'keyboard', Config.Command.keyMapping)
 
 
-
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
+        DisplayRadar(SETTINGS["MINIMAP"])
+	    Wait(0)
+    end
+end)
+
+CreateThread(function()
+    while true do
+        local sleep = 8
         if ftype == "ulow" then
+            sleep = 1
             --// Find closest ped and set the alpha
             for ped in GetWorldPeds() do
                 if not IsEntityOnScreen(ped) then
@@ -115,7 +131,7 @@ Citizen.CreateThread(function()
                 end
 
                 SetPedAoBlobRendering(ped, false)
-                Citizen.Wait(1)
+                Wait(sleep)
             end
 
             --// Find closest object and set the alpha
@@ -130,7 +146,7 @@ Citizen.CreateThread(function()
                         SetEntityAlpha(obj, 170)
                     end
                 end
-                Citizen.Wait(1)
+                Wait(sleep)
             end
 
 
@@ -140,6 +156,7 @@ Citizen.CreateThread(function()
             OverrideLodscaleThisFrame(0.4)
             SetArtificialLightsState(true)
         elseif ftype == "low" then
+            sleep = 1
             for ped in GetWorldPeds() do
                 if not IsEntityOnScreen(ped) then
                     SetEntityAlpha(ped, 0)
@@ -153,7 +170,7 @@ Citizen.CreateThread(function()
                 end
                 SetPedAoBlobRendering(ped, false)
 
-                Citizen.Wait(1)
+                Wait(sleep)
             end
 
             for obj in GetWorldObjects() do
@@ -167,7 +184,7 @@ Citizen.CreateThread(function()
                         SetEntityAlpha(ped, 210)
                     end
                 end
-                Citizen.Wait(1)
+                Wait(sleep)
             end
 
             SetDisableDecalRenderingThisFrame()
@@ -178,16 +195,18 @@ Citizen.CreateThread(function()
 
             OverrideLodscaleThisFrame(0.8)
         else
-            Citizen.Wait(500)
+            sleep = 500
         end
-        Citizen.Wait(8)
+        Wait(sleep)
     end
 end)
 
 --// Clear broken thing, disable rain, disable wind and other tiny thing that dont require the frame tick
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
+        local sleep = 1500
         if type == "ulow" or type == "low" then
+            sleep = 300
             ClearAllBrokenGlass()
             ClearAllHelpMessages()
             LeaderboardsReadClearAll()
@@ -211,9 +230,9 @@ Citizen.CreateThread(function()
             DisableScreenblurFade()
             SetRainLevel(0.0)
             SetWindSpeed(0.0)
-            Citizen.Wait(300)
+            Wait(sleep)
         else
-            Citizen.Wait(1500)
+            Wait(sleep)
         end
     end
 end)

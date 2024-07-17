@@ -12,9 +12,9 @@
 
 </head>
 
-<body class="font-sans" style="display: none;">
+<body class="font-sans">
     <div id="app">
-        <div class="justify-center items-center flex h-screen text-white animate-slideIn">
+        <div class="justify-center items-center flex h-screen text-white animate-slideIn" v-show="showUI">
             <div class="w-[70rem] h-[37.5rem] bg-[#151A30] rounded-2xl">
                 <div
                     class="float-left pl-5 flex flex-col items-center pt-5 gap-8 h-full w-[15rem] bg-[#1C1D41] rounded-3xl">
@@ -42,39 +42,39 @@
                     <div class="pl-[2.5rem] pt-[1rem] flex flex-col gap-5">
                         <div>
 
-                            <h1 class="text-3xl">{{locales.welcome}} {{data.igName}}</h1>
+                            <h1 class="text-3xl">{{locales.welcome}} {{data?.igName}}</h1>
                             <h2 class="text-xl">{{locales.welcomeUnder}}</h2>
                         </div>
                         
                         <div class="bg-[#1C1D41] w-[50rem] h-[12rem]  rounded-xl">
                             <div class="pt-6 pl-3.5 grid grid-cols-4 gap-7 ">
                                 <div class="bg-[#151A30] w-[12rem] h-[3.5rem] text-base text-center rounded-xl  pt-3.5">
-                                    {{locales.cash}} {{data.cash}} {{locales.money}}
+                                    {{locales.cash}} {{data?.cash}} {{locales.money}}
 
                                 </div>
                                 <div class="bg-[#151A30] w-[12rem] h-[3.5rem] text-base text-center rounded-xl  pt-3.5">
 
-                                    {{locales.bank}} {{data.bank}} {{locales.money}}
+                                    {{locales.bank}} {{data?.bank}} {{locales.money}}
                                 </div>
                                 <div
                                     class="bg-[#151A30] w-[12rem] h-[3.5rem] text-base text-center rounded-xl   pt-3.5 hover:cursor-pointer hover:scale-105 transition-all" @click="copyID()">
                                     {{locales.license}} 
                                 </div>
                                 <div class="bg-[#151A30] w-[10rem] h-[3.5rem] text-base text-center rounded-xl  pt-3.5">
-                                    {{locales.serverID}}  {{data.playerID}}
+                                    {{locales.serverID}}  {{data?.playerID}}
                                 </div>
                                 <div class="bg-[#151A30] w-[12rem] h-[3.5rem] text-base text-center rounded-xl  pt-3.5">
-                                    {{locales.group}} {{data.groupAdmin}}
+                                    {{locales.group}} {{data?.groupAdmin}}
                                 </div>
                                 <div class="bg-[#151A30] w-[12rem] h-[3.5rem] text-base text-center rounded-xl  pt-3.5">
-                                    {{locales.job}}  {{data.job}}
+                                    {{locales.job}}  {{data?.job}}
                                 </div>
                                 <div class="bg-[#151A30] w-[12rem] h-[3.5rem] text-base text-center rounded-xl  pt-3.5">
-                                    {{locales.position}}  {{data.jobPost}}
+                                    {{locales.position}}  {{data?.jobPost}}
                                 </div>
 
                                 <div class="bg-[#151A30] w-[10rem] h-[3.5rem] text-base text-center rounded-xl  pt-3.5">
-                                    {{locales.salary}} {{data.salary}} {{locales.money}}
+                                    {{locales.salary}} {{data?.salary}} {{locales.money}}
                                 </div>
 
                             </div>
@@ -84,26 +84,26 @@
                             <div class="grid grid-cols-3 gap-6 mt-8 ml-3">
                                 <div class=" w-52 text-center pt-3 h-[3rem] bg-[#151A30] rounded-lg">
                                     <i class="fa-solid fa-handcuffs"></i>
-                                    {{locales.police}} {{data.police}}
+                                    {{locales.police}} {{data?.police}}
                                 </div>
                                 <div class=" w-52 text-center pt-3 h-[3rem] bg-[#151A30] rounded-lg">
                                     <i class="fa-solid fa-truck-medical"></i>
-                                    {{locales.ems}} {{data.ems}}
+                                    {{locales.ems}} {{data?.ems}}
                                 </div>
                                 <div class=" w-52 text-center pt-3 h-[3rem] bg-[#151A30] rounded-lg">
                                     <i class="fa-solid fa-toolbox"></i>
-                                    {{locales.mechanic}} {{data.mechanic}}
+                                    {{locales.mechanic}} {{data?.mechanic}}
                                 </div>
                                 <div class=" w-52 text-center pt-3 h-[3rem] bg-[#151A30] rounded-lg">
                                     <i class="fa-solid fa-certificate"></i>
-                                    {{locales.adminCount}} {{data.admins}}
+                                    {{locales.adminCount}} {{data?.admins}}
                                 </div>
                                 <div class=" w-52 text-center pt-3 h-[3rem] bg-[#546199] rounded-lg">
                                     {{locales.playerData}}
                                 </div>
                                 <div class=" w-52 text-center pt-3 h-[3rem] bg-[#151A30] rounded-lg gap-5 space-x-">
                                     <i class="fa-solid fa-user"></i>
-                                    {{locales.playerCount}} {{data.players}}
+                                    {{locales.playerCount}} {{data?.players}}
                                 </div>
                             </div>
                         </div>
@@ -127,10 +127,10 @@
                                     <input name="settings" type="checkbox" id="MINIMAP" value="MINIMAP"
                                         class="peer hidden " @change="changes($event)" />
                                     <label for="MINIMAP"
-                                        class="  select-none cursor-pointer rounded-lg border-2 border-gray-200 py-3 px-6 font-bold text-gray-200 transition-colors duration-200 ease-in-out peer-checked:bg-gray-200 peer-checked:text-gray-900 peer-checked:border-gray-200">
-                                        MINIMAP OFF </label>
+                                        class="select-none cursor-pointer rounded-lg border-2 border-gray-200 py-3 px-6 font-bold text-gray-200 transition-colors duration-200 ease-in-out peer-checked:bg-gray-200 peer-checked:text-gray-900 peer-checked:border-gray-200">
+                                        MINIMAP {{showMinimap ? 'OFF' : 'ON'}} </label>
                                 </div>
-                                <div @click="fpsChange('reset')"
+                                <div @click="fetchData('fpsChange','reset')"
                                     class="rounded-lg cursor-pointer hover:scale-105 transition-all bg-[#151A30] w-[12rem] h-[3rem] text-xl text-center pt-2"
                                     >
                                     <button>
@@ -139,14 +139,14 @@
                                 </div>
                                 <div 
                                     class="rounded-lg cursor-pointer hover:scale-105 transition-all bg-[#151A30] w-[12rem] h-[3rem] text-xl text-center pt-2"
-                                    @click="fpsChange('ulow')">
+                                    @click="fetchData('fpsChange','ulow')">
                                     <button>
                                         FPS BOOST ULOW
                                     </button>
                                 </div>
                                 <div 
                                     class="rounded-lg cursor-pointer hover:scale-105 transition-all bg-[#151A30] w-[12rem] h-[3rem] text-xl text-center pt-2"
-                                    @click="fpsChange('low')">
+                                    @click="fetchData('fpsChange','low')">
                                     <button>
                                         FPS BOOST LOW
                                     </button>

@@ -1,13 +1,14 @@
 lib.callback.register('server:setData', function(source)
-    local data = {}
     local xPlayer = ESX.GetPlayerFromId(source)
     local adminCount = 0
-    for k, admin in pairs(ESX.GetExtendedPlayers()) do
+    
+    for _, admin in pairs(ESX.GetExtendedPlayers()) do
         if admin.getGroup() ~= "user" then
             adminCount = adminCount + 1
         end
     end
-    data = {
+
+    return {
         igName = xPlayer.getName(),
         cash = xPlayer.getAccount("money").money,
         bank = xPlayer.getAccount("bank").money,
@@ -22,6 +23,5 @@ lib.callback.register('server:setData', function(source)
         ems = #ESX.GetExtendedPlayers('job', "ambulance"),
         mechanic = #ESX.GetExtendedPlayers('job', "mechanic"),
         admins = adminCount
-    }   
-    return data
+    }
 end)
