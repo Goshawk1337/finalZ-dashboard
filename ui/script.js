@@ -6,40 +6,34 @@ const App = Vue.createApp({
             locales: {},
             page: "home",
             boost: "normal",
-            showSettings: false
+            showSettings: false,
+            showUI: false,
+            showMinimap: true
         };
     },
     methods: {
+        fetchData(key, value) {
+            fetch(`https://${GetParentResourceName()}/getData`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: key,
+                    data: value
+                })
+            });
+        },
         close() {
             fetch(`https://${GetParentResourceName()}/exit`);
             this.showSettings = false
-        },
-        fpsChange(type) {
-            fetch(`https://${GetParentResourceName()}/fpsChange`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    type: type,
-                })
-            });
+            this.showUI = false
         },
         changes(event) {
-            let type = event.target.value
+            let inputValue = event.target.value
             let checked = event.target.checked
-            fetch(`https://${GetParentResourceName()}/settings`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    state: checked,
-                    type: type,
-                })
-            });
+            this.showMinimap = checked
+            this.fetchData('settings', {state: checked, inputValue: inputValue})
         },
         copyID() {
-            fetch(`https://${GetParentResourceName()}/copyID`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    identifier: this.data.license
-                })
-            });
+            this.fetchData('copyID', {identifier: this.data.license})
         },
         handleKeyDown(event) {
             if (event.key === "Escape" || event.key === "Home") {
@@ -47,30 +41,21 @@ const App = Vue.createApp({
             }
         },
         switchpage(newPage) {
-            document.getElementById(this.page).style.display = "none"
-            document.getElementById(newPage).style.display = "block"
-
-            if (newPage === "settings") {
-                this.showSettings = true
-            } else {
-                this.showSettings = false
-            }
+            this.showSettings = newPage === "settings"
         },
     },
 
     mounted() {
-        var _this = this;
+        this.showMinimap = true
 
-        window.addEventListener('message', function (event) {
+        window.addEventListener('message', (event) => {
             if (event.data.type === "show") {
-                document.body.style.display = event.data.enable ? "block" : "none";
-                
+                this.showUI = event.data.enable;
             } else if (event.data.type === "loadData") {
-                _this.data = event.data.data;
-                _this.locales = event.data.locales
+                this.data = event.data.data;
+                this.locales = event.data.locales;
             }
         });
-
 
         window.addEventListener('keydown', this.handleKeyDown);
 
